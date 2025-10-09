@@ -1,10 +1,10 @@
 const chalk = require('chalk')
-const { validateConfig } = require('../utils/config')
-const { readConfigFile } = require('../utils/file')
-const { validateApiConfig } = require('../utils/validator')
-const { readConfig } = require('../utils/config')
-const LatencyTester = require('../utils/latency-tester')
-const { t } = require('../utils/i18n')
+const { validateConfig } = require('../../utils/config')
+const { readConfigFile } = require('../../utils/file')
+const { validateApiConfig } = require('../../utils/validator')
+const { readConfig } = require('../../utils/config')
+const LatencyTester = require('../../utils/latency-tester')
+const { t } = require('../../utils/i18n')
 
 let configData
 const maxText = 50

@@ -7,16 +7,23 @@ const { t } = require('./utils/i18n')
 
 // 导入命令处理模块
 const versionCommand = require('./commands/version')
-const setCommand = require('./commands/set')
-const listCommand = require('./commands/list')
-const useCommand = require('./commands/use')
-const testCommand = require('./commands/test')
-const autoCommand = require('./commands/auto')
-const pingCommand = require('./commands/ping')
+const setCommand = require('./commands/claude/set')
+const listCommand = require('./commands/claude/list')
+const useCommand = require('./commands/claude/use')
+const testCommand = require('./commands/claude/test')
+const autoCommand = require('./commands/claude/auto')
+const pingCommand = require('./commands/claude/ping')
 const updateCommand = require('./commands/update')
-const envCommand = require('./commands/env')
-const clearCommand = require('./commands/clear')
+const envCommand = require('./commands/claude/env')
+const clearCommand = require('./commands/claude/clear')
 const langCommand = require('./commands/lang')
+
+const codexSetCommand = require('./commands/codex/set')
+const codexListCommand = require('./commands/codex/list')
+const codexUseCommand = require('./commands/codex/use')
+const codexPingCommand = require('./commands/codex/ping')
+const codexTestCommand = require('./commands/codex/test')
+const codexAutoCommand = require('./commands/codex/auto')
 
 const program = new Command()
 
@@ -157,6 +164,64 @@ async function initializeProgram() {
     .description(await t('commands.lang.description'))
     .action(async (language) => {
       await langCommand(language)
+    })
+
+  // Codex 命令组 - 使用子命令方式
+  const codexCmd = program
+    .command('codex')
+    .alias('cx')
+    .description(await t('commands.codex.description'))
+
+  codexCmd
+    .command('set [path]')
+    .description(await t('commands.codex.set.description'))
+    .action(async (path) => {
+      await codexSetCommand(path)
+      await checkVersionInBackground()
+    })
+
+  codexCmd
+    .command('ls')
+    .alias('list')
+    .description(await t('commands.codex.list.description'))
+    .action(async () => {
+      await codexListCommand()
+      await checkVersionInBackground()
+    })
+
+  codexCmd
+    .command('use <name>')
+    .description(await t('commands.codex.use.description'))
+    .option('-m, --model <index>', await t('commands.codex.use.modelOption'))
+    .action(async (name, options) => {
+      await codexUseCommand(name, options)
+      await checkVersionInBackground()
+    })
+
+  codexCmd
+    .command('ping')
+    .description(await t('commands.codex.ping.description'))
+    .action(async () => {
+      await codexPingCommand()
+      await checkVersionInBackground()
+    })
+
+  codexCmd
+    .command('test [name]')
+    .description(await t('commands.codex.test.description'))
+    .action(async (name) => {
+      await codexTestCommand(name)
+      await checkVersionInBackground()
+    })
+
+  codexCmd
+    .command('auto [name]')
+    .description(await t('commands.codex.auto.description'))
+    .option('-p, --ping', await t('commands.codex.auto.pingOption'))
+    .option('-t, --test', await t('commands.codex.auto.testOption'))
+    .action(async (name, options) => {
+      await codexAutoCommand(name, options)
+      await checkVersionInBackground()
     })
 
   return program

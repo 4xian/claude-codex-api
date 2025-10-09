@@ -2,9 +2,9 @@ const chalk = require('chalk')
 const pingCommand = require('./ping')
 const testCommand = require('./test')
 const useCommand = require('./use')
-const { validateConfig } = require('../utils/config')
-const { readConfigFile } = require('../utils/file')
-const { t } = require('../utils/i18n')
+const { validateConfig } = require('../../utils/config')
+const { readConfigFile } = require('../../utils/file')
+const { t } = require('../../utils/i18n')
 
 /**
  * 分析测试结果，从已排序的结果中选择最优配置

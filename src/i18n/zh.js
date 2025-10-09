@@ -10,16 +10,16 @@ module.exports = {
   // 命令描述
   commands: {
     set: {
-      description: '设置配置文件路径',
+      description: '设置Claude Code配置文件路径',
       settingsOption: 'Claude Code settings.json文件路径',
-      apiOption: '自定义API配置文件路径'
+      apiOption: '自定义Claude API配置文件路径'
     },
     list: {
-      description: '显示当前API配置列表',
+      description: '显示当前Claude API配置列表',
       alias: '列举'
     },
     use: {
-      description: '切换到指定的API配置',
+      description: '切换到指定的Claude API配置',
       urlOption: '指定要切换的URL索引（从1开始，仅对数组类型url有效）',
       keyOption: '指定要切换的Key索引（从1开始，仅对数组类型key有效）',
       tokenOption: '指定要切换的Token索引（从1开始，仅对数组类型token有效）',
@@ -27,16 +27,16 @@ module.exports = {
       fastOption: '指定要切换的快速模型索引（从1开始，仅对数组类型fast有效）'
     },
     ping: {
-      description: '测试API配置中所有URL的网络延迟'
+      description: '测试Claude API配置中所有URL的网络延迟'
     },
     test: {
-      description: '测试API配置在Claude Code中是否可用',
+      description: '测试Claude API配置在Claude Code中是否可用',
       tokenOption: '指定要使用的Token索引（从1开始，仅在测试单个配置时有效）',
       keyOption: '指定要使用的Key索引（从1开始，仅在测试单个配置时有效）',
       cliOption: '使用Claude Code CLI方式进行测试，而非默认的接口模拟方式'
     },
     auto: {
-      description: '自动测试API配置并切换到最优配置',
+      description: '自动测试Claude API配置并切换到最优配置',
       pingOption: '使用ping测试延迟结果选择最优配置切换（快速且只验证网站URL延迟）',
       testOption: '使用test测试结果选择最优配置切换（稍慢但验证真实API可用性）'
     },
@@ -44,7 +44,7 @@ module.exports = {
       description: '更新ccapi到最新版本'
     },
     env: {
-      description: '环境变量管理：设置/查看/清除系统环境变量',
+      description: 'Claude环境变量管理：设置/查看/清除系统环境变量',
       urlOption: '指定要使用的URL索引（从1开始，仅对数组类型url有效）',
       keyOption: '指定要使用的Key索引（从1开始，仅对数组类型key有效）',
       tokenOption: '指定要使用的Token索引（从1开始，仅对数组类型token有效）',
@@ -52,7 +52,7 @@ module.exports = {
       fastOption: '指定要使用的快速模型索引（从1开始，仅对数组类型fast有效）'
     },
     clear: {
-      description: '完全清除配置：同时清除settings.json和系统环境变量相关API配置'
+      description: '完全清除Claude配置：同时清除settings.json和系统环境变量相关API配置'
     },
     lang: {
       description: '查看或设置语言',
@@ -60,6 +60,31 @@ module.exports = {
       available: '可用语言',
       usage: '用法：ccapi lang [语言代码]',
       examples: '示例：\n  ccapi lang     # 查看当前语言\n  ccapi lang zh  # 设置为中文\n  ccapi lang en  # 设置为英文'
+    },
+    codex: {
+      description: 'Codex配置管理',
+      usage: '用法: ccapi -cx <command>',
+      set: {
+        description: '设置Codex配置文件路径, 正常使用官方的默认配置config.toml即可'
+      },
+      list: {
+        description: '显示所有Codex提供商列表'
+      },
+      use: {
+        description: '切换Codex提供商',
+        modelOption: '指定要切换的模型索引（从1开始）'
+      },
+      ping: {
+        description: '测试所有Codex提供商的网络延迟'
+      },
+      test: {
+        description: '测试Codex提供商在Codex CLI中是否可用'
+      },
+      auto: {
+        description: '自动测试Codex提供商并切换到最优提供商',
+        pingOption: '使用ping测试延迟结果选择最优提供商切换（只验证网站URL延迟）',
+        testOption: '使用test测试结果选择最优提供商切换（验证真实API可用性）'
+      }
     }
   },
 
@@ -90,20 +115,20 @@ module.exports = {
 
   // 成功消息
   success: {
-    CONFIG_SAVED: '配置路径已保存',
-    CONFIG_SWITCHED: '配置切换成功',
+    CONFIG_SAVED: 'Claude配置路径已保存',
+    CONFIG_SWITCHED: 'Claude配置切换成功',
     RESTART_TERMINAL: '(提示: [settings.json中环境变量 > 系统环境变量] & 重启Claude Code终端后配置生效!)',
     BACKUP_CREATED: 'settings文件已备份',
-    ENV_SET_SUCCESS: '环境变量设置成功',
-    ENV_CLEAR_SUCCESS: '环境变量清除成功',
-    FULL_CLEAR_SUCCESS: '配置完全清除成功',
-    ENV_SYNC_SUCCESS: '配置已同步到环境变量',
+    ENV_SET_SUCCESS: 'Claude环境变量设置成功',
+    ENV_CLEAR_SUCCESS: 'Claude环境变量清除成功',
+    FULL_CLEAR_SUCCESS: 'Claude配置完全清除成功',
+    ENV_SYNC_SUCCESS: 'Claude配置已同步到环境变量',
     LANGUAGE_SWITCHED: '语言已切换为中文'
   },
 
   // 通用提示
   prompts: {
-    CURRENT_CONFIG_PATHS: '当前配置路径:',
+    CURRENT_CONFIG_PATHS: '当前Claude Code配置路径:',
     WARNING: '警告',
     FILE_NOT_EXISTS: '当前路径文件不存在',
     NOT_SET: '未设置',
@@ -201,10 +226,61 @@ module.exports = {
     BEST_ROUTE: '最优路线: {0}',
     CONFIG_NOT_EXIST: '配置 "{0}" 不存在',
     AVAILABLE_CONFIGS: '可用配置:',
-    TESTING_CONFIGS: '正在测试配置URL延迟...',
+    TESTING_CONFIGS: '正在测试Claude配置URL延迟...',
     LATENCY_TEST_COMPLETE: 'URL延迟测试完成! 成功: {0}/{1}',
     LATENCY_TEST_FAILED: 'URL延迟测试失败:',
     CONFIG_FORMAT_ERROR: 'api配置文件格式不正确'
+  },
+
+  // Codex 相关
+  codex: {
+    CURRENT_CONFIG_PATH: '当前Codex配置路径:',
+    CONFIG_PATH_SET: 'Codex配置路径已保存',
+    SET_FAILED: '设置Codex配置失败',
+    SET_PATH_HELP: '使用以下命令设置路径(正常使用官方默认配置config.toml即可):',
+    SET_PATH_USAGE: '设置Codex配置文件路径',
+    FILE_NOT_EXIST: 'Codex配置文件不存在: {0}',
+    NO_PROVIDERS: '没有可用的Codex提供商',
+    AVAILABLE_PROVIDERS: '可用的Codex提供商:',
+    NAME: 'Name',
+    URL: 'URL',
+    KEY: 'Key',
+    MODELS: 'Models',
+    CURRENT_PROVIDER: '当前使用的Codex提供商: {0}',
+    NO_CURRENT_PROVIDER: '当前未设置提供商',
+    LIST_FAILED: '列表获取失败',
+    PROVIDER_NAME_REQUIRED: '必须指定提供商名称',
+    PROVIDER_NOT_FOUND: '提供商 "{0}" 不存在',
+    AVAILABLE_PROVIDERS_LIST: '可用的提供商:',
+    MODEL_INDEX_OUT_OF_RANGE: '模型索引 {0} 超出范围，可用范围: 1-{1}',
+    CURRENT_CONFIG_DETAILS: '当前Codex配置详情:',
+    NAME_LABEL: '名称: {0}',
+    URL_LABEL: 'URL: {0}',
+    MODEL_LABEL: 'Model: {0}',
+    KEY_LABEL: 'Key: {0}',
+    ENV_KEY_LABEL: '环境变量: {0}',
+    AUTH_JSON_UPDATED: 'auth.json已更新: {0}',
+    ENV_VAR_SET: '系统环境变量 {0} 已设置',
+    ENV_VAR_SET_FAILED: '环境变量设置失败，请手动设置',
+    USE_FAILED: '切换Codex提供商失败',
+    TESTING_LATENCY: '正在测试Codex提供商延迟...',
+    TESTING_LATENCY_COUNT: '正在测试 {0} 个Codex提供商的网络延迟...',
+    TESTING_VALIDITY: '正在测试Codex提供商有效性...',
+    TESTING_VALIDITY_COUNT: '正在测试 {0} 个提供商在Codex CLI中的有效性...',
+    LATENCY_TEST_RESULTS: '延迟测试结果(按延迟从低到高):',
+    LATENCY_TEST_COMPLETE: '延迟测试完成 ({0}/{1} 成功)',
+    VALIDITY_TEST_COMPLETE: '有效性测试完成 ({0}/{1} 成功)',
+    NO_URL: '未配置URL',
+    TESTING: '测试中',
+    FASTEST_PROVIDER: '最快的提供商:',
+    NO_AVAILABLE_PROVIDERS: '没有可用的提供商',
+    PING_FAILED: '延迟测试失败',
+    TEST_FAILED: '有效性测试失败',
+    CONFIG_NOT_FOUND: 'Codex配置文件不存在: {0}',
+    ENV_SET_FAILED: '环境变量设置失败',
+    API_KEY_MISSING: '未配置api_key，请在配置文件中添加后重试',
+    SWITCH_CONFIG_SUCCESS: '配置切换成功',
+    RESTART_TERMINAL: '(提示: 重启Codex终端后配置生效!)'
   },
 
   // 自动选择相关
@@ -216,13 +292,13 @@ module.exports = {
 
   // 使用配置相关
   use: {
-    API_FORMAT_ERROR: 'api.json文件格式不正确',
+    API_FORMAT_ERROR: 'Claude api.json文件格式不正确',
     SETTINGS_FORMAT_ERROR: 'settings.json文件格式不正确',
-    SWITCHING_CONFIG: '正在切换配置: {0}',
+    SWITCHING_CONFIG: '正在切换Claude配置: {0}',
     SWITCHING_ENV: '正在设置系统环境变量...',
     SETTINGS_SUCCESS_ENV_FAILED: 'settings.json更新成功，环境变量更新失败',
-    CONFIG_SYNCED: '配置已同步更新到settings.json和系统环境变量',
-    CURRENT_CONFIG_DETAILS: '当前配置详情:',
+    CONFIG_SYNCED: 'Claude配置已同步更新到settings.json和系统环境变量',
+    CURRENT_CONFIG_DETAILS: '当前Claude配置详情:',
     NAME_LABEL: '名称: {0}',
     URL_LABEL: 'URL: {0}',
     MODEL_LABEL: 'Model: {0}',
@@ -232,18 +308,18 @@ module.exports = {
     HTTP_LABEL: 'HTTP: {0}',
     HTTPS_LABEL: 'HTTPS: {0}',
     USE_SET_CMD: '请先使用 {0} 命令设置配置文件路径',
-    SWITCH_CONFIG_FAILED: '切换配置失败:'
+    SWITCH_CONFIG_FAILED: '切换Claude配置失败:'
   },
 
   // 列表相关
   listDisplay: {
-    AVAILABLE_API_CONFIGS: '可用的API配置:',
-    NO_CONFIGS_AVAILABLE: '暂无可用配置',
-    CURRENT_CONFIG: '当前使用的配置: {0}',
-    NO_CURRENT_CONFIG: '当前未进行任何配置',
-    LIST_FAILED: '列举配置失败:',
+    AVAILABLE_API_CONFIGS: '可用的Claude API配置:',
+    NO_CONFIGS_AVAILABLE: '暂无可用Claude配置',
+    CURRENT_CONFIG: '当前使用的Claude配置: {0}',
+    NO_CURRENT_CONFIG: '当前未进行任何Claude配置',
+    LIST_FAILED: '列举Claude配置失败:',
     USE_SET_CMD: '请先使用 {0} 命令设置配置文件路径',
-    API_FORMAT_ERROR: 'api配置文件格式不正确',
+    API_FORMAT_ERROR: 'Claude api配置文件格式不正确',
     SETTINGS_FORMAT_ERROR: 'settings.json文件格式不正确'
   },
 

@@ -1,13 +1,13 @@
 const chalk = require('chalk')
-const { validateConfig } = require('../utils/config')
-const { readConfigFile } = require('../utils/file')
-const { validateApiConfig } = require('../utils/validator')
-const { readConfig } = require('../utils/config')
+const { validateConfig } = require('../../utils/config')
+const { readConfigFile } = require('../../utils/file')
+const { validateApiConfig } = require('../../utils/validator')
+const { readConfig } = require('../../utils/config')
 const spawn = require('cross-spawn')
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
-const { t } = require('../utils/i18n')
+const { t } = require('../../utils/i18n')
 
 let configData
 let testTempDirs = []
@@ -200,9 +200,41 @@ async function testApiLatencyWithCurl(url, key, token, model = 'claude-3-5-haiku
       const requestBody = {
         model: testModel,
         max_tokens: 521,
-        messages: [{ role: 'user', content: testMessage }],
-        temperature: 0,
-        stream: true
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: '<system-reminder></system-reminder>'
+              },
+              {
+                type: 'text',
+                text: testMessage
+              }
+            ]
+          }
+        ],
+        temperature: 1,
+        stream: true,
+        system: [
+          {
+            type: 'text',
+            text: "You are Claude Code, Anthropic's official CLI for Claude.",
+            cache_control: {
+              type: 'ephemeral'
+            }
+          },
+          {
+            type: 'text',
+            text: '\nYou are an interactive CLI tool that helps users with software engineering tasks.'
+          }
+        ],
+        tools: [],
+        metadata: {
+          user_id:
+            'user_035f3800f7f80f30fc50b1d72140745cacdd6aae25242833a7ec520b1936a4bc_account__session_18097d37-792a-46e3-b097-4532d7721202'
+        }
       }
 
       const requestBodyString = JSON.stringify(requestBody)
@@ -754,7 +786,7 @@ async function displaySimpleResults(sortedResults) {
           : result.response
         : result.error || 'Success'
 
-      const show = configData.testResponse === void 0 ? true : !!configData.testResponse;
+      const show = configData.testResponse === void 0 ? true : !!configData.testResponse
       const responseDisplay = show ? ` [Response: ${responseText}]` : ''
 
       console.log(`    ${index + 1}.[${result.url}] ${status}(${color.bold(latencyText)})${responseDisplay}`)
@@ -767,7 +799,7 @@ async function displaySimpleResults(sortedResults) {
  * 并行测试所有API配置的主函数 - 按URL维度并发控制
  */
 async function testCommand(configName = null, keyIndex = 0, tokenIndex = 0, useCli = false) {
-  const { cleanupAllTempProjects } = require('../utils/cleanup')
+  const { cleanupAllTempProjects } = require('../../utils/cleanup')
   try {
     const config = await validateConfig()
 

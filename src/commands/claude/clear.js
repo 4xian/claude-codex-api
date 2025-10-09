@@ -1,15 +1,15 @@
 const chalk = require('chalk')
 const readline = require('readline')
-const { validateConfig } = require('../utils/config')
-const { readConfigFile, writeConfigFile, backupFile } = require('../utils/file')
-const { validateSettingsConfig } = require('../utils/validator')
-const { CLAUDE_ENV_KEYS } = require('../utils/constants')
+const { validateConfig } = require('../../utils/config')
+const { readConfigFile, writeConfigFile, backupFile } = require('../../utils/file')
+const { validateSettingsConfig } = require('../../utils/validator')
+const { CLAUDE_ENV_KEYS } = require('../../utils/constants')
 const { 
   clearSystemEnvVars, 
   checkEnvStatus, 
   getCurrentConfigName 
-} = require('../utils/env')
-const { t } = require('../utils/i18n')
+} = require('../../utils/env')
+const { t } = require('../../utils/i18n')
 const maxText = 30
 
 /**

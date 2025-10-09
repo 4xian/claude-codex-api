@@ -1,0 +1,275 @@
+const chalk = require('chalk')
+const { getCodexProviders } = require('../../utils/codex-config')
+const { readConfig } = require('../../utils/config')
+const SSEClient = require('../../utils/sse-client')
+const { t } = require('../../utils/i18n')
+const { instructions } = require('./instructions')
+
+let configData
+const maxText = 50
+
+async function getConfigData() {
+  if (!configData) {
+    configData = await readConfig()
+  }
+  return configData
+}
+
+const LATENCY_COLORS = {
+  EXCELLENT: { color: chalk.green, threshold: 300 },
+  GOOD: { color: chalk.yellow, threshold: 800 },
+  POOR: { color: chalk.red, threshold: Infinity }
+}
+
+function getLatencyColor(latency) {
+  if (latency === 'error' || latency === Infinity) {
+    return { color: chalk.red, text: 'error', status: '●' }
+  }
+
+  const ms = parseInt(latency)
+  if (ms <= LATENCY_COLORS.EXCELLENT.threshold) {
+    return {
+      color: LATENCY_COLORS.EXCELLENT.color,
+      text: `${ms}ms`,
+      status: '●'
+    }
+  } else if (ms <= LATENCY_COLORS.GOOD.threshold) {
+    return { color: LATENCY_COLORS.GOOD.color, text: `${ms}ms`, status: '●' }
+  } else {
+    return { color: LATENCY_COLORS.POOR.color, text: `${ms}ms`, status: '●' }
+  }
+}
+
+function showSpinner() {
+  const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+  let i = 0
+  return setInterval(() => {
+    process.stdout.write(`\r${frames[i]} `)
+    i = (i + 1) % frames.length
+  }, 100)
+}
+
+function formatUrl(url, maxLength = maxText) {
+  if (url.length > maxLength) {
+    return url.slice(0, maxLength - 3) + '...'
+  }
+  return url
+}
+
+async function testCodexProvider(name, config, model, attempt = 1) {
+  const cfg = await getConfigData()
+  const timeout = cfg?.testTimeout || 30000
+  const startTime = Date.now()
+
+  const testModel = attempt === 1 ? 'gpt-5' : 'gpt-5-codex'
+
+  try {
+    const requestBody = {
+      model: testModel,
+      instructions,
+      input: [
+        {
+          type: 'message',
+          role: 'user',
+          content: [
+            {
+              type: 'input_text',
+              text: 'Please respond with "Success" in your reply.'
+            }
+          ]
+        }
+      ],
+      reasoning: {
+        effort: 'low',
+        summary: 'auto'
+      },
+      store: false,
+      stream: true,
+      include: ['reasoning.encrypted_content']
+    }
+
+    const result = await SSEClient.request(`${config.base_url}/responses`, {
+      body: requestBody,
+      headers: {
+        'User-Agent': 'codex_cli_rs/0.39.0 (Mac OS 15.4.1; arm64) Apple_Terminal/455.1',
+        'Connection': 'keep-alive',
+        'Accept': 'text/event-stream',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'authorization': `Bearer ${config.api_key}`,
+        'openai-beta': 'responses=experimental',
+        // 'conversation_id': '01996750-f9a9-72c2-a019-ef7affbcb73f',
+        // 'session_id': '01996750-f9a9-72c2-a019-ef7affbcb73f',
+        'originator': 'codex_cli_rs'
+      },
+      timeout
+    })
+    const latency = Date.now() - startTime
+    const responseText = SSEClient.extractOutputText(result.events)
+
+    return {
+      success: true,
+      latency,
+      response:
+        responseText.length > maxText ? responseText.slice(0, maxText) + '...' : responseText.replace(/\n/g, '').trim(),
+      error: null,
+      model: testModel,
+      attempt
+    }
+  } catch (error) {
+    return {
+      success: false,
+      latency: 'error',
+      error: error.message.replace(/\n/g, '').trim(),
+      response: null,
+      model: testModel,
+      attempt
+    }
+  }
+}
+
+async function testSingleProvider(name, config) {
+  if (!config.base_url) {
+    return {
+      name,
+      url: null,
+      success: false,
+      latency: 'error',
+      error: await t('codex.NO_URL'),
+      model: null,
+      response: null
+    }
+  }
+
+  if (!config.api_key) {
+    return {
+      name,
+      url: config.base_url,
+      success: false,
+      latency: 'error',
+      error: await t('codex.API_KEY_MISSING'),
+      model: null,
+      response: null
+    }
+  }
+
+  const currentModel = config.models && config.models.length > 0 ? config.models[0] : 'gpt-5'
+
+  let result = await testCodexProvider(name, config, currentModel, 1)
+
+  if (result.success) {
+    return {
+      name,
+      url: config.base_url,
+      ...result
+    }
+  }
+
+  result = await testCodexProvider(name, config, currentModel, 2)
+  return {
+    name,
+    url: config.base_url,
+    ...result
+  }
+}
+
+async function displayTestResults(sortedResults) {
+  console.log()
+  console.log(chalk.yellow.bold(await t('test.TEST_RESULTS_TITLE')))
+  console.log()
+
+  const translations = {
+    valid: await t('test.VALID'),
+    invalid: await t('test.INVALID')
+  }
+
+  const cfg = await getConfigData()
+  const noUrlText = await t('codex.NO_URL')
+
+  sortedResults.forEach((result) => {
+    const status =
+      result.success && result.latency !== 'error'
+        ? `✅ ${chalk.green.bold(translations.valid)}`
+        : `❌ ${chalk.red.bold(translations.invalid)}`
+    const { color } = getLatencyColor(result.latency)
+    const latencyText = result.latency === 'error' ? 'error' : `${result.latency}ms`
+    const responseText = result.response
+      ? result.response.length > maxText
+        ? result.response.slice(0, maxText) + '...'
+        : result.response
+      : result.error || 'Success'
+
+    const show = cfg?.testResponse === void 0 ? true : !!cfg.testResponse
+    const responseDisplay = show ? ` [Response: ${responseText}]` : ''
+
+    const urlFormatted = result.url ? formatUrl(result.url) : noUrlText
+    console.log(chalk.cyan.bold(`[${result.name}]`))
+    console.log(`    1.[${urlFormatted}] ${status}(${color.bold(latencyText)})${responseDisplay}`)
+    console.log()
+  })
+}
+
+async function codexTestCommand(providerName = null) {
+  try {
+    const providers = await getCodexProviders()
+
+    if (!providers || Object.keys(providers).length === 0) {
+      console.log(chalk.yellow(await t('codex.NO_PROVIDERS')))
+      return
+    }
+
+    let providersToTest = {}
+
+    if (providerName) {
+      if (!providers[providerName]) {
+        console.error(chalk.red(await t('common.PARAMETER_ERROR')), await t('codex.PROVIDER_NOT_FOUND', providerName))
+        console.log(chalk.green(await t('codex.AVAILABLE_PROVIDERS_LIST')), Object.keys(providers).join(', '))
+        return
+      }
+      providersToTest[providerName] = providers[providerName]
+    } else {
+      providersToTest = providers
+    }
+
+    const totalProviders = Object.keys(providersToTest).length
+    console.log(chalk.green.bold(await t('codex.TESTING_VALIDITY_COUNT', totalProviders)))
+
+    const globalSpinner = showSpinner()
+
+    const testPromises = Object.entries(providersToTest).map(async ([name, config]) => {
+      return await testSingleProvider(name, config)
+    })
+
+    const allResults = await Promise.all(testPromises)
+
+    clearInterval(globalSpinner)
+    process.stdout.write('\r\u001b[K')
+
+    const sortedResults = allResults.sort((a, b) => {
+      if (a.latency === Infinity && b.latency === Infinity) {
+        return a.name.localeCompare(b.name)
+      }
+      if (a.latency === Infinity || a.latency === 'error') return 1
+      if (b.latency === Infinity || b.latency === 'error') return -1
+      return a.latency - b.latency
+    })
+
+    await displayTestResults(sortedResults)
+
+    console.log()
+
+    const successResults = sortedResults.filter((r) => r.success)
+    const totalUrls = sortedResults.length
+    const successUrls = successResults.length
+
+    console.log(chalk.green.bold(await t('codex.VALIDITY_TEST_COMPLETE', successUrls, totalUrls)))
+
+    console.log()
+
+    return sortedResults
+  } catch (error) {
+    console.error(chalk.red(await t('codex.TEST_FAILED')), error.message)
+    process.exit(1)
+  }
+}
+
+module.exports = codexTestCommand

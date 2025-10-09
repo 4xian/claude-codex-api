@@ -10,33 +10,33 @@ module.exports = {
   // Command descriptions
   commands: {
     set: {
-      description: 'Set configuration file paths',
+      description: 'Set Claude Code configuration file paths',
       settingsOption: 'Claude Code settings.json file path',
-      apiOption: 'Custom API configuration file path'
+      apiOption: 'Custom Claude API configuration file path'
     },
     list: {
-      description: 'Display current API configuration list',
+      description: 'Display current Claude API configuration list',
       alias: 'list'
     },
     use: {
-      description: 'Switch to specified API configuration',
+      description: 'Switch to specified Claude API configuration',
       urlOption: 'Specify URL index to switch to (starting from 1, only valid for array type url)',
       keyOption: 'Specify Key index to switch to (starting from 1, only valid for array type key)',
       tokenOption: 'Specify Token index to switch to (starting from 1, only valid for array type token)',
       modelOption: 'Specify model index to switch to (starting from 1, only valid for array type model)',
-      fastOption: 'Specify fast model index to switch to (starting from 1, only valid for array type fast)'
+      fastOption: 'Specify fast model index to switch (starting from 1, only valid for array type fast)'
     },
     ping: {
-      description: 'Test network latency of all URLs in API configuration'
+      description: 'Test network latency of all URLs in Claude API configuration'
     },
     test: {
-      description: 'Test if API configuration is available in Claude Code',
+      description: 'Test if Claude API configuration is available in Claude Code',
       tokenOption: 'Specify Token index to use (starting from 1, only valid when testing single configuration)',
       keyOption: 'Specify Key index to use (starting from 1, only valid when testing single configuration)',
       cliOption: 'Use Claude Code CLI method for testing instead of default API mock method'
     },
     auto: {
-      description: 'Automatically test API configurations and switch to the optimal one',
+      description: 'Automatically test Claude API configurations and switch to the optimal one',
       pingOption:
         'Use ping test latency results to select optimal configuration (fast and only verifies website URL latency)',
       testOption: 'Use test results to select optimal configuration (slower but verifies real API availability)'
@@ -45,7 +45,7 @@ module.exports = {
       description: 'Update ccapi to latest version'
     },
     env: {
-      description: 'Environment variable management: set/view/clear system environment variables',
+      description: 'Claude environment variable management: set/view/clear system environment variables',
       urlOption: 'Specify URL index to use (starting from 1, only valid for array type url)',
       keyOption: 'Specify Key index to use (starting from 1, only valid for array type key)',
       tokenOption: 'Specify Token index to use (starting from 1, only valid for array type token)',
@@ -54,7 +54,7 @@ module.exports = {
     },
     clear: {
       description:
-        'Completely clear configuration: clear both settings.json and system environment variables related API configuration'
+        'Completely clear Claude configuration: clear both settings.json and system environment variables related API configuration'
     },
     lang: {
       description: 'View or set language',
@@ -63,6 +63,31 @@ module.exports = {
       usage: 'Usage: ccapi lang [language_code]',
       examples:
         'Examples:\n  ccapi lang     # View current language\n  ccapi lang zh  # Set to Chinese\n  ccapi lang en  # Set to English'
+    },
+    codex: {
+      description: 'Codex configuration management',
+      usage: 'Usage: ccapi -cx <command>',
+      set: {
+        description: 'Set Codex configuration file path, normally use the official default config.toml'
+      },
+      list: {
+        description: 'Display all Codex provider list'
+      },
+      use: {
+        description: 'Switch Codex provider',
+        modelOption: 'Specify model index to switch (starting from 1)'
+      },
+      ping: {
+        description: 'Test network latency of all Codex providers'
+      },
+      test: {
+        description: 'Test if Codex provider is available in Codex CLI'
+      },
+      auto: {
+        description: 'Automatically test Codex providers and switch to the optimal one',
+        pingOption: 'Use ping test results to select and switch to optimal provider (only validates URL latency)',
+        testOption: 'Use test results to select and switch to optimal provider (validates real API availability)'
+      }
     }
   },
 
@@ -94,20 +119,20 @@ module.exports = {
 
   // Success messages
   success: {
-    CONFIG_SAVED: 'Configuration path saved',
-    CONFIG_SWITCHED: 'Configuration switched successfully',
+    CONFIG_SAVED: 'Claude configuration path saved',
+    CONFIG_SWITCHED: 'Claude configuration switched successfully',
     RESTART_TERMINAL: '(Note: Restart Claude Code terminal for configuration to take effect!)',
     BACKUP_CREATED: 'settings file backed up',
-    ENV_SET_SUCCESS: 'Environment variable set successfully',
-    ENV_CLEAR_SUCCESS: 'Environment variable cleared successfully',
-    FULL_CLEAR_SUCCESS: 'Configuration completely cleared successfully',
-    ENV_SYNC_SUCCESS: 'Configuration synchronized to environment variables',
+    ENV_SET_SUCCESS: 'Claude environment variable set successfully',
+    ENV_CLEAR_SUCCESS: 'Claude environment variable cleared successfully',
+    FULL_CLEAR_SUCCESS: 'Claude configuration completely cleared successfully',
+    ENV_SYNC_SUCCESS: 'Claude configuration synchronized to environment variables',
     LANGUAGE_SWITCHED: 'Language switched to English'
   },
 
   // Common prompts
   prompts: {
-    CURRENT_CONFIG_PATHS: 'Current configuration paths:',
+    CURRENT_CONFIG_PATHS: 'Current Claude Code configuration paths:',
     WARNING: 'Warning',
     FILE_NOT_EXISTS: 'Current path file does not exist',
     NOT_SET: 'Not set',
@@ -212,6 +237,57 @@ module.exports = {
     CONFIG_FORMAT_ERROR: 'api configuration file format error'
   },
 
+  // Codex related
+  codex: {
+    CURRENT_CONFIG_PATH: 'Current configuration path:',
+    CONFIG_PATH_SET: 'Configuration path saved',
+    SET_FAILED: 'Failed to set Codex configuration',
+    SET_PATH_HELP: 'Use the following command to set path:',
+    SET_PATH_USAGE: 'Set Codex configuration file path',
+    FILE_NOT_EXIST: 'Codex configuration file does not exist: {0}',
+    NO_PROVIDERS: 'No Codex providers available',
+    AVAILABLE_PROVIDERS: 'Available Codex providers:',
+    NAME: 'Name',
+    URL: 'URL',
+    KEY: 'Key',
+    MODELS: 'Model list',
+    CURRENT_PROVIDER: 'Current provider: {0}',
+    NO_CURRENT_PROVIDER: 'No provider currently set',
+    LIST_FAILED: 'Failed to get provider list',
+    PROVIDER_NAME_REQUIRED: 'Provider name is required',
+    PROVIDER_NOT_FOUND: 'Provider "{0}" not found',
+    AVAILABLE_PROVIDERS_LIST: 'Available providers:',
+    MODEL_INDEX_OUT_OF_RANGE: 'Model index {0} out of range, available range: 1-{1}',
+    CURRENT_CONFIG_DETAILS: 'Current Codex configuration details:',
+    NAME_LABEL: 'Name: {0}',
+    URL_LABEL: 'URL: {0}',
+    MODEL_LABEL: 'Model: {0}',
+    KEY_LABEL: 'Key: {0}',
+    ENV_KEY_LABEL: 'Environment variable key: {0}',
+    AUTH_JSON_UPDATED: 'auth.json updated: {0}',
+    ENV_VAR_SET: 'System environment variable {0} set',
+    ENV_VAR_SET_FAILED: 'Failed to set environment variable, please set manually',
+    USE_FAILED: 'Failed to switch Codex provider',
+    TESTING_LATENCY: 'Testing Codex provider latency...',
+    TESTING_LATENCY_COUNT: 'Testing network latency for {0} Codex providers...',
+    TESTING_VALIDITY: 'Testing Codex provider availability...',
+    TESTING_VALIDITY_COUNT: 'Testing availability of {0} Codex providers in Codex CLI...',
+    LATENCY_TEST_RESULTS: 'Latency test results (sorted by latency low to high):',
+    LATENCY_TEST_COMPLETE: 'Latency test complete ({0}/{1} succeeded)',
+    VALIDITY_TEST_COMPLETE: 'Validity test complete ({0}/{1} succeeded)',
+    NO_URL: 'No URL configured',
+    TESTING: 'Testing',
+    FASTEST_PROVIDER: 'Fastest provider:',
+    NO_AVAILABLE_PROVIDERS: 'No available providers',
+    PING_FAILED: 'Latency test failed',
+    TEST_FAILED: 'Validity test failed',
+    CONFIG_NOT_FOUND: 'Codex configuration file not found: {0}',
+    ENV_SET_FAILED: 'Failed to set environment variable',
+    API_KEY_MISSING: 'Empty api_key, please add it in the configuration file and try again',
+    SWITCH_CONFIG_SUCCESS: 'Configuration switched successfully',
+    RESTART_TERMINAL: '(Note: Restart terminal for configuration to take effect!)'
+  },
+
   // Auto selection related
   auto: {
     NO_CONFIGS_AVAILABLE: 'No configurations available for testing',
@@ -221,13 +297,13 @@ module.exports = {
 
   // Use configuration related
   use: {
-    API_FORMAT_ERROR: 'api.json file format error',
+    API_FORMAT_ERROR: 'Claude api.json file format error',
     SETTINGS_FORMAT_ERROR: 'settings.json file format error',
-    SWITCHING_CONFIG: 'Switching configuration: {0}',
+    SWITCHING_CONFIG: 'Switching Claude configuration: {0}',
     SWITCHING_ENV: 'Setting system environment variables...',
     SETTINGS_SUCCESS_ENV_FAILED: 'settings.json updated successfully, environment variable update failed',
-    CONFIG_SYNCED: 'Configuration synchronized to both settings.json and system environment variables',
-    CURRENT_CONFIG_DETAILS: 'Current configuration details:',
+    CONFIG_SYNCED: 'Claude configuration synchronized to both settings.json and system environment variables',
+    CURRENT_CONFIG_DETAILS: 'Current Claude configuration details:',
     NAME_LABEL: 'Name: {0}',
     URL_LABEL: 'URL: {0}',
     MODEL_LABEL: 'Model: {0}',
@@ -237,18 +313,18 @@ module.exports = {
     HTTP_LABEL: 'HTTP: {0}',
     HTTPS_LABEL: 'HTTPS: {0}',
     USE_SET_CMD: 'Please use {0} command to set configuration file path first',
-    SWITCH_CONFIG_FAILED: 'Switch configuration failed:'
+    SWITCH_CONFIG_FAILED: 'Switch Claude configuration failed:'
   },
 
   // List related
   listDisplay: {
-    AVAILABLE_API_CONFIGS: 'Available API configurations:',
-    NO_CONFIGS_AVAILABLE: 'No configurations available',
-    CURRENT_CONFIG: 'Currently using configuration: {0}',
-    NO_CURRENT_CONFIG: 'Currently not using any configuration',
-    LIST_FAILED: 'List configurations failed:',
+    AVAILABLE_API_CONFIGS: 'Available Claude API configurations:',
+    NO_CONFIGS_AVAILABLE: 'No Claude configurations available',
+    CURRENT_CONFIG: 'Currently using Claude configuration: {0}',
+    NO_CURRENT_CONFIG: 'Currently not using any Claude configuration',
+    LIST_FAILED: 'List Claude configurations failed:',
     USE_SET_CMD: 'Please use {0} command to set configuration file path first',
-    API_FORMAT_ERROR: 'api configuration file format error',
+    API_FORMAT_ERROR: 'Claude api configuration file format error',
     SETTINGS_FORMAT_ERROR: 'settings.json file format error'
   },
 

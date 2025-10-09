@@ -1,10 +1,10 @@
 const chalk = require('chalk')
-const { validateConfig, readConfig } = require('../utils/config')
-const { readConfigFile, writeConfigFile, backupFile } = require('../utils/file')
-const { validateApiConfig, validateSettingsConfig, validateConfigName } = require('../utils/validator')
-const { CLAUDE_ENV_KEYS, ERROR_MESSAGES, SUCCESS_MESSAGES } = require('../utils/constants')
-const { setSystemEnvVars } = require('../utils/env')
-const { t } = require('../utils/i18n')
+const { validateConfig, readConfig } = require('../../utils/config')
+const { readConfigFile, writeConfigFile, backupFile } = require('../../utils/file')
+const { validateApiConfig, validateSettingsConfig, validateConfigName } = require('../../utils/validator')
+const { CLAUDE_ENV_KEYS, ERROR_MESSAGES, SUCCESS_MESSAGES } = require('../../utils/constants')
+const { setSystemEnvVars } = require('../../utils/env')
+const { t } = require('../../utils/i18n')
 
 /**
  * 检查是否为当前配置
@@ -136,7 +136,7 @@ async function useCommand(configName, options = {}) {
     const targetConfig = { ...originalConfig }
 
     // 设置默认值
-    targetConfig.model = targetConfig.model || 'claude-sonnet-4-20250514'
+    targetConfig.model = targetConfig.model || 'claude-sonnet-4-5-20250929'
     // targetConfig.fast = targetConfig.fast || 'claude-3-5-haiku-20241022';
     // targetConfig.timeout = targetConfig.timeout || "600000";
 
@@ -163,7 +163,7 @@ async function useCommand(configName, options = {}) {
       const selectedModel = await selectFieldValue(
         targetConfig.model,
         options.model ? parseInt(options.model) : 0,
-        'claude-sonnet-4-20250514'
+        'claude-sonnet-4-5-20250929'
       )
 
       const selectedFast = await selectFieldValue(targetConfig.fast, options.fast ? parseInt(options.fast) : 0, '')

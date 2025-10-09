@@ -1,8 +1,8 @@
 # @4xian/ccapi
 
-English | [中文](./README.md)
+English | [中文](./README.md) | [Codex Documentation](./CODEX_README_EN.md)
 
-A CLI tool for managing Claude Code configurations, allowing users to quickly switch between different API endpoints, keys, tokens, models, and test network latency to automatically select optimal configurations with internationalization support.
+A CLI tool for managing Claude Code and Codex configurations, allowing users to quickly switch between different API endpoints, keys, tokens, models, and test network latency to automatically select optimal configurations with internationalization support.
 
 ## Features
 
@@ -15,6 +15,7 @@ A CLI tool for managing Claude Code configurations, allowing users to quickly sw
 - 📄 **Multi-format Support** - Supports JSON, JSON5, YAML, TOML configuration files
 - 🔧 **Array Support** - Supports array configurations for multiple URLs, Keys, Tokens, Models and other fields
 - 🌍 **Internationalization** - Supports Chinese and English interface language switching
+- 🎨 **Codex Support** - Supports Codex configuration management and provider switching
 
 ## Installation
 
@@ -447,7 +448,7 @@ ccapi lang en
 }
 ```
 
-### 12. Complete ccapi-config.json Configuration
+### 13. Complete ccapi-config.json Configuration
 
 This file is the configuration file used by ccapi, where you can configure options. The specific file is located at ~/.ccapi-config.json.
 
@@ -457,10 +458,12 @@ This file is the configuration file used by ccapi, where you can configure optio
   "settingsPath": "~/.claude/settings.json",
   # api configuration file path
   "apiConfigPath": "/Users/4xian/Desktop/api.json5",
+  # codex configuration file path (optional)
+  "codexConfigPath": "~/.codex/config.toml",
   # ping command timeout
-  "pingTimeout": 5000,
-  # test command timeout (default 30s for API mock method, 60s for CLI method)
-  "testTimeout": 30000,
+  "pingTimeout": 30000,
+  # test command timeout
+  "testTimeout": 100000,
   # ping, test command result display
   "testResponse": true,
   # whether update prompts are needed

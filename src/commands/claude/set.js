@@ -1,8 +1,8 @@
 const chalk = require('chalk')
-const { validateSetCommand } = require('../utils/validator')
-const { setSettingsPath, setApiConfigPath, getSettingsPath, getApiConfigPath } = require('../utils/config')
-const { fileExists } = require('../utils/file')
-const { t } = require('../utils/i18n')
+const { validateSetCommand } = require('../../utils/validator')
+const { setSettingsPath, setApiConfigPath, getSettingsPath, getApiConfigPath } = require('../../utils/config')
+const { fileExists } = require('../../utils/file')
+const { t } = require('../../utils/i18n')
 
 /**
  * 设置配置文件路径命令
