@@ -40,7 +40,7 @@ api_key = [
   "your-api-key1",
   "your-api-key2"
 ]
-models = [
+model = [
   "gpt-5-codex",
   "gpt-5"
 ]
