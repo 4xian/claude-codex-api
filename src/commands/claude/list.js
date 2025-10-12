@@ -136,7 +136,7 @@ async function formatFieldDisplay(fieldValue, currentIndex, label, isMasked = fa
     const lines = [`${localizedLabel}:`]
     fieldValue.forEach((value, index) => {
       const isCurrentValue = index === currentIndex
-      const prefix = isCurrentValue ? '    * - ' : '      - '
+      const prefix = isCurrentValue ? ' *' : '  '
 
       // 处理敏感信息脱敏
       let displayValue = value
@@ -145,7 +145,7 @@ async function formatFieldDisplay(fieldValue, currentIndex, label, isMasked = fa
       }
 
       const valueDisplay = isCurrentValue ? chalk.green.bold(displayValue) : chalk.cyan(displayValue)
-      const text = `${prefix}${index + 1}: ${valueDisplay}`
+      const text = `${prefix}${index + 1}. ${valueDisplay}`
       lines.push(isCurrentValue ? chalk.green.bold(text) : text)
     })
     return lines
@@ -170,7 +170,7 @@ async function formatConfigDisplay(name, config, currentInfo) {
   const nameDisplay = isCurrent ? chalk.green.bold(`[${name}]`) : chalk.cyan(`[${name}]`)
 
   // 设置默认值
-  config.model = config.model || 'claude-sonnet-4-20250514'
+  config.model = config.model || 'claude-sonnet-4-5-20250929'
   // config.fast = config.fast || 'claude-3-5-haiku-20241022';
 
   let details = []
@@ -195,7 +195,7 @@ async function formatConfigDisplay(name, config, currentInfo) {
       config.key,
       isCurrent ? currentInfo.keyIndex : -1,
       'Key',
-      true // 需要脱敏
+      true
     )
     details.push(...keyLines)
   }
@@ -206,7 +206,7 @@ async function formatConfigDisplay(name, config, currentInfo) {
       config.token,
       isCurrent ? currentInfo.tokenIndex : -1,
       'Token',
-      true // 需要脱敏
+      true
     )
     details.push(...tokenLines)
   }

@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-const { getCodexProviders, getCurrentProvider, getCurrentModel } = require('../../utils/codex-config')
+const { getCodexProviders, getCurrentProvider, getCurrentModel, getCurrentKey } = require('../../utils/codex-config')
 const { t } = require('../../utils/i18n')
 
 const maxText = 30
@@ -20,7 +20,7 @@ async function codexListCommand() {
 
     for (const [name, config] of Object.entries(providers)) {
       const isCurrent = name === currentProvider
-      const prefix = isCurrent ? chalk.green.bold('*') : '  '
+      const prefix = isCurrent ? chalk.green.bold(' *') : '  '
       const nameDisplay = isCurrent ? chalk.green.bold(`[${name}]`) : chalk.cyan(`[${name}]`)
 
       console.log(`${prefix}${nameDisplay}`)
@@ -34,15 +34,29 @@ async function codexListCommand() {
       }
 
       if (config.api_key) {
-        const maskedKey = config.api_key.length > maxText ? config.api_key.slice(0, maxText) + '...' : config.api_key
-        console.log(`    ${await t('codex.KEY')}: ${chalk.cyan(maskedKey)}`)
+        const currentKey = isCurrent ? await getCurrentKey() : null
+        
+        if (Array.isArray(config.api_key)) {
+          console.log(`    ${await t('codex.KEY')}:`)
+          config.api_key.forEach((key, index) => {
+            const isCurrentKey = isCurrent && key === currentKey
+            const prefix = isCurrentKey ? '     *' : '      '
+            const maskedKey = key.length > maxText ? key.slice(0, maxText) + '...' : key
+            const keyDisplay = isCurrentKey ? chalk.green.bold(maskedKey) : chalk.cyan(maskedKey)
+            const text = `${prefix}${index + 1}: ${keyDisplay}`
+            console.log(isCurrentKey ? chalk.green.bold(text) : text)
+          })
+        } else {
+          const maskedKey = config.api_key.length > maxText ? config.api_key.slice(0, maxText) + '...' : config.api_key
+          console.log(`    ${await t('codex.KEY')}: ${chalk.cyan(maskedKey)}`)
+        }
       }
 
-      if (config.models && config.models.length > 0) {
+      if (config.model && config.model.length > 0) {
         console.log(`    ${await t('codex.MODELS')}:`)
-        config.models.forEach((model, index) => {
+        config.model.forEach((model, index) => {
           const isCurrentModel = isCurrent && model === currentModel
-          const prefix = isCurrentModel ? '    * - ' : '      - '
+          const prefix = isCurrentModel ? '     *' : '      '
           const modelDisplay = isCurrentModel ? chalk.green.bold(model) : chalk.cyan(model)
           const text = `${prefix}${index + 1}: ${modelDisplay}`
           console.log(isCurrentModel ? chalk.green.bold(text) : text)

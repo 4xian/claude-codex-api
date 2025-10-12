@@ -2,8 +2,9 @@
 
 [English](./README_EN.md) | 中文 | [Codex文档](./CODEX_README.md)
 
-一个Claude 和 Codex 配置管理工具，一键切换多个中转站API配置；一键切换系统环境变量，一键测试API延迟，一键测试API有效性，自动择优线路切换与国际化支持。
-(当前文档为Claude Code配置介绍，Codex文档请点击右上角↗️查看)
+一个Claude 和 Codex 配置管理工具，一键切换多个中转站API配置；
+一键切换系统环境变量，一键测试API延迟，一键测试API有效性，自动择优线路切换与国际化支持。
+**当前文档为Claude Code配置介绍，Codex文档请点击右上角↗️查看**
 
 ## 功能特性
 
@@ -36,21 +37,22 @@ ccapi -v
 
 ### 2. 设置配置文件路径
 
-初次使用需要设置 Claude Code 的 settings.json 文件路径和自定义API配置文件路径：
+初次使用需要设置Claude Code的settings.json 文件路径和自定义API配置文件路径：
 
 ```bash
 # windows 默认settings.json路径在 C:\Users\Administrator\.claude\settings.json
 # mac 默认settings.json路径在 ~/.claude/settings.json
 # 若无settings.json文件可自己创建一个
 
-# 1. 示例: mac同时设置两个路径
+# 三种方式设置路径(例如)：
+1. mac同时设置两个路径
 ccapi set --settings ~/.claude/settings.json --api /Users/4xian/Desktop/api.json5
 
-# 2. 分别设置
+2.分别设置
 ccapi set --settings ~/.claude/settings.json
 ccapi set --api /Users/4xian/Desktop/api.json5
 
-# 3. 直接在配置文件中修改路径
+3.直接在配置文件中修改路径
 # (若无 .ccapi-config.json 文件可自己创建一个)
 在 ~/.ccapi-config.json 文件中(与.claude同级)，有存储路径的变量，直接修改即可
   {
@@ -58,11 +60,11 @@ ccapi set --api /Users/4xian/Desktop/api.json5
     "apiConfigPath": "/Users/4xian/Desktop/api.json5",
   }
 
-# 查询当前配置文件路径
+# 查询当前设置的配置文件路径
 ccapi set
 ```
 
-### 3. 自定义API配置文件格式(注意格式要配置正确)
+### 3. 重要：自定义API配置文件格式(注意格式要配置正确)
 
 支持多种配置文件格式：**JSON、JSON5、YAML、TOML**
 创建一个配置文件（如 `api.json`、`api.yaml`、`api.json5` 或 `api.toml`），格式如下：

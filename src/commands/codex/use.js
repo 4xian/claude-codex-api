@@ -137,12 +137,23 @@ async function codexUseCommand(providerName, options = {}) {
     }
 
     const provider = providers[providerName]
-    const apiKey = provider.api_key
+    let apiKey = provider.api_key
     const envKey = provider.env_key || 'OPENAI_API_KEY'
 
     if (!apiKey) {
       console.error(chalk.red(await t('codex.API_KEY_MISSING', providerName)))
       process.exit(1)
+    }
+
+    const keyIndex = options.key ? parseInt(options.key) : null
+    if (keyIndex !== null && Array.isArray(apiKey)) {
+      if (keyIndex < 1 || keyIndex > apiKey.length) {
+        console.error(chalk.red(await t('codex.KEY_INDEX_OUT_OF_RANGE', keyIndex, apiKey.length)))
+        process.exit(1)
+      }
+      apiKey = apiKey[keyIndex - 1]
+    } else if (Array.isArray(apiKey)) {
+      apiKey = apiKey[0]
     }
 
     const previousEnvKey = await getCurrentEnvKey()
@@ -175,12 +186,10 @@ async function codexUseCommand(providerName, options = {}) {
     console.log(await t('codex.NAME_LABEL', chalk.cyan(providerName)))
     console.log(await t('codex.URL_LABEL', chalk.cyan(provider.base_url)))
 
-    if (modelIndex && provider.models && provider.models[modelIndex - 1]) {
-      console.log(await t('codex.MODEL_LABEL', chalk.cyan(provider.models[modelIndex - 1])))
+    if (modelIndex && provider.model && provider.model[modelIndex - 1]) {
+      console.log(await t('codex.MODEL_LABEL', chalk.cyan(provider.model[modelIndex - 1])))
     }
-
     console.log(await t('codex.ENV_KEY_LABEL', chalk.cyan(envKey)))
-
     const maskedKey = apiKey.length > 30 ? apiKey.slice(0, 30) + '...' : apiKey
     console.log(await t('codex.KEY_LABEL', chalk.cyan(maskedKey)))
 

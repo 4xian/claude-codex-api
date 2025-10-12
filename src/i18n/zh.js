@@ -3,7 +3,7 @@ module.exports = {
   // CLI 基础信息
   cli: {
     description:
-      '一个快速切换Claude Code配置的工具，支持URL、API_KEY、AUTH_TOKEN、MODEL快速切换、系统环境变量一键管理、延迟测速、自动择优线路、国际化支持',
+      '一个快速切换Claude Code和Codex配置的工具，一键切换URL、API_KEY、AUTH_TOKEN、MODEL、一键切换系统环境变量、URL延迟测速、API有效性测试、国际化支持',
     version: '显示版本信息'
   },
 
@@ -63,7 +63,7 @@ module.exports = {
     },
     codex: {
       description: 'Codex配置管理',
-      usage: '用法: ccapi -cx <command>',
+      usage: '用法: ccapi cx <command>',
       set: {
         description: '设置Codex配置文件路径, 正常使用官方的默认配置config.toml即可'
       },
@@ -72,7 +72,8 @@ module.exports = {
       },
       use: {
         description: '切换Codex提供商',
-        modelOption: '指定要切换的模型索引（从1开始）'
+        modelOption: '指定要切换的模型索引（从1开始）',
+        keyOption: '指定要切换的API Key索引（从1开始，仅对数组类型api_key有效）'
       },
       ping: {
         description: '测试所有Codex提供商的网络延迟'
@@ -83,7 +84,7 @@ module.exports = {
       auto: {
         description: '自动测试Codex提供商并切换到最优提供商',
         pingOption: '使用ping测试延迟结果选择最优提供商切换（只验证网站URL延迟）',
-        testOption: '使用test测试结果选择最优提供商切换（验证真实API可用性）'
+        testOption: '使用test测试结果选择最优提供商切换（验证API可用性）'
       }
     }
   },
@@ -170,7 +171,7 @@ module.exports = {
     BEST_ROUTE: '最优路线',
     CONFIG_FORMAT_ERROR: 'api配置文件格式不正确',
     CONFIG_NOT_EXIST: '配置 "{0}" 不存在',
-    TESTING_CONFIGS: '正在测试配置URL在Claude Code中的有效性(时间可能稍长,请耐心等待)...',
+    TESTING_CONFIGS: '正在测试配置在Claude Code中的有效性(时间可能稍长,请耐心等待)...',
     TEST_COMPLETE: '有效性测试完成, 此结果代表能否在Claude Code中使用!',
     TEST_FAILED: '有效性测试失败:',
     VALID: '有效',
@@ -245,7 +246,8 @@ module.exports = {
     NAME: 'Name',
     URL: 'URL',
     KEY: 'Key',
-    MODELS: 'Models',
+    KEYS: 'API Keys',
+    MODELS: 'Model',
     CURRENT_PROVIDER: '当前使用的Codex提供商: {0}',
     NO_CURRENT_PROVIDER: '当前未设置提供商',
     LIST_FAILED: '列表获取失败',
@@ -253,20 +255,22 @@ module.exports = {
     PROVIDER_NOT_FOUND: '提供商 "{0}" 不存在',
     AVAILABLE_PROVIDERS_LIST: '可用的提供商:',
     MODEL_INDEX_OUT_OF_RANGE: '模型索引 {0} 超出范围，可用范围: 1-{1}',
+    KEY_INDEX_OUT_OF_RANGE: 'API Key索引 {0} 超出范围，可用范围: 1-{1}',
     CURRENT_CONFIG_DETAILS: '当前Codex配置详情:',
     NAME_LABEL: '名称: {0}',
     URL_LABEL: 'URL: {0}',
     MODEL_LABEL: 'Model: {0}',
     KEY_LABEL: 'Key: {0}',
+    KEY_INDEX_LABEL: 'Key索引: {0}',
     ENV_KEY_LABEL: '环境变量: {0}',
     AUTH_JSON_UPDATED: 'auth.json已更新: {0}',
     ENV_VAR_SET: '系统环境变量 {0} 已设置',
     ENV_VAR_SET_FAILED: '环境变量设置失败，请手动设置',
     USE_FAILED: '切换Codex提供商失败',
     TESTING_LATENCY: '正在测试Codex提供商延迟...',
-    TESTING_LATENCY_COUNT: '正在测试 {0} 个Codex提供商的网络延迟...',
+    TESTING_LATENCY_COUNT: '正在测试{0}个Codex提供商的网络延迟...',
     TESTING_VALIDITY: '正在测试Codex提供商有效性...',
-    TESTING_VALIDITY_COUNT: '正在测试 {0} 个提供商在Codex CLI中的有效性...',
+    TESTING_VALIDITY_COUNT: '正在测试{0}个提供商在Codex CLI中的有效性...',
     LATENCY_TEST_RESULTS: '延迟测试结果(按延迟从低到高):',
     LATENCY_TEST_COMPLETE: '延迟测试完成 ({0}/{1} 成功)',
     VALIDITY_TEST_COMPLETE: '有效性测试完成 ({0}/{1} 成功)',

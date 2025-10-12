@@ -122,6 +122,17 @@ async function getCurrentEnvKey() {
   return config.codexCurrentEnvKey || null
 }
 
+async function getCurrentKey() {
+  const authPath = getDefaultCodexAuthPath()
+  
+  if (!(await fs.pathExists(authPath))) {
+    return null
+  }
+  
+  const authData = await fs.readJson(authPath).catch(() => ({}))
+  return authData.OPENAI_API_KEY || null
+}
+
 module.exports = {
   getDefaultCodexConfigPath,
   getDefaultCodexAuthPath,
@@ -133,6 +144,7 @@ module.exports = {
   getCodexProviders,
   getCurrentProvider,
   getCurrentModel,
+  getCurrentKey,
   updateCodexProvider,
   ensureAuthJsonExists,
   updateAuthJson,

@@ -3,7 +3,7 @@ module.exports = {
   // CLI basic information
   cli: {
     description:
-      'A tool for quickly switching Claude Code configurations, supporting URL, API_KEY, AUTH_TOKEN, MODEL quick switching, one-click management of system environment variables, delay speed measurement, automatic optimal line selection, and internationalization support',
+      'A tool for quickly switching Claude Code and Codex configurations, one-click switching of URL, API_KEY, AUTH_TOKEN, MODEL, one-click switching of system environment variables, URL delay speed measurement, API validity test, and internationalization support',
     version: 'Show version information'
   },
 
@@ -66,7 +66,7 @@ module.exports = {
     },
     codex: {
       description: 'Codex configuration management',
-      usage: 'Usage: ccapi -cx <command>',
+      usage: 'Usage: ccapi cx <command>',
       set: {
         description: 'Set Codex configuration file path, normally use the official default config.toml'
       },
@@ -75,7 +75,8 @@ module.exports = {
       },
       use: {
         description: 'Switch Codex provider',
-        modelOption: 'Specify model index to switch (starting from 1)'
+        modelOption: 'Specify model index to switch (starting from 1)',
+        keyOption: 'Specify API Key index to switch (starting from 1, only valid for array type api_key)'
       },
       ping: {
         description: 'Test network latency of all Codex providers'
@@ -250,6 +251,7 @@ module.exports = {
     NAME: 'Name',
     URL: 'URL',
     KEY: 'Key',
+    KEYS: 'API Keys',
     MODELS: 'Model list',
     CURRENT_PROVIDER: 'Current provider: {0}',
     NO_CURRENT_PROVIDER: 'No provider currently set',
@@ -258,11 +260,13 @@ module.exports = {
     PROVIDER_NOT_FOUND: 'Provider "{0}" not found',
     AVAILABLE_PROVIDERS_LIST: 'Available providers:',
     MODEL_INDEX_OUT_OF_RANGE: 'Model index {0} out of range, available range: 1-{1}',
+    KEY_INDEX_OUT_OF_RANGE: 'API Key index {0} out of range, available range: 1-{1}',
     CURRENT_CONFIG_DETAILS: 'Current Codex configuration details:',
     NAME_LABEL: 'Name: {0}',
     URL_LABEL: 'URL: {0}',
     MODEL_LABEL: 'Model: {0}',
     KEY_LABEL: 'Key: {0}',
+    KEY_INDEX_LABEL: 'Key index: {0}',
     ENV_KEY_LABEL: 'Environment variable key: {0}',
     AUTH_JSON_UPDATED: 'auth.json updated: {0}',
     ENV_VAR_SET: 'System environment variable {0} set',

@@ -2,20 +2,18 @@
 
 English | [中文](./README.md) | [Codex Documentation](./CODEX_README_EN.md)
 
-A CLI tool for managing Claude Code and Codex configurations, allowing users to quickly switch between different API endpoints, keys, tokens, models, and test network latency to automatically select optimal configurations with internationalization support.
+A CLI tool for managing Claude Code and Codex configurations, allowing one-click switching between multiple transit station API configurations;
+One-click switching of system environment variables, one-click testing of API latency, one-click testing of API validity, automatic optimal route switching with internationalization support.
+**Current document is for Claude Code configuration. For Codex documentation, click the link above ↗️**
 
 ## Features
 
-- 🚀 **One-click Switch** - Easily switch between different Claude API configurations
+- 🚀 **One-Click Switching** - Easily switch between different Claude / Codex API configurations
 - 🌐 **Environment Variable Management** - One-click setup of API configurations to system environment variables
-- ⚡ **Latency Testing** - Quickly test all gateway latencies simultaneously and API configuration availability
-- 🎯 **Auto Optimization** - Automatically test and switch to the optimal configuration with lowest latency
-- 🔒 **Safe Backup** - Automatically backup settings.json file before modifications
-- 🧠 **Smart Recognition** - Automatically identify currently used configuration and optimal routes
+- ⚡ **Latency Testing** - Quickly and simultaneously test all transit station latency and API configuration availability
+- 🎯 **Auto Optimization** - Automatically test and switch to optimal configuration with lowest latency
 - 📄 **Multi-format Support** - Supports JSON, JSON5, YAML, TOML configuration files
-- 🔧 **Array Support** - Supports array configurations for multiple URLs, Keys, Tokens, Models and other fields
 - 🌍 **Internationalization** - Supports Chinese and English interface language switching
-- 🎨 **Codex Support** - Supports Codex configuration management and provider switching
 
 ## Installation
 
@@ -42,19 +40,21 @@ ccapi -v
 First-time use requires setting the path to Claude Code's settings.json file and custom API configuration file path:
 
 ```bash
-Examples:
-# windows default path: C:\Users\Administrator\.claude\settings.json
-# mac default path:  ~/.claude/settings.json
+# Windows default settings.json path: C:\Users\Administrator\.claude\settings.json
+# Mac default settings.json path: ~/.claude/settings.json
+# If settings.json file doesn't exist, you can create one yourself
 
-# mac: Set both paths simultaneously
+# Three ways to set paths (examples):
+1. Mac: Set both paths simultaneously
 ccapi set --settings ~/.claude/settings.json --api /Users/4xian/Desktop/api.json5
 
-# Set them separately
+2. Set separately
 ccapi set --settings ~/.claude/settings.json
 ccapi set --api /Users/4xian/Desktop/api.json5
 
-# Directly modify paths in configuration file
-# In ~/.ccapi-config.json file (at same level as .claude), there are path storage variables, modify directly:
+3. Directly modify paths in configuration file
+# (If .ccapi-config.json file doesn't exist, you can create one yourself)
+In ~/.ccapi-config.json file (at same level as .claude), there are path storage variables, modify directly:
   {
     "settingsPath": "~/.claude/settings.json",
     "apiConfigPath": "/Users/4xian/Desktop/api.json5",
@@ -64,7 +64,7 @@ ccapi set --api /Users/4xian/Desktop/api.json5
 ccapi set
 ```
 
-### 3. Custom API Configuration File Format
+### 3. Important: Custom API Configuration File Format (Pay attention to correct format)
 
 Supports multiple configuration file formats: **JSON, JSON5, YAML, TOML**
 Create a configuration file (such as `api.json`, `api.yaml`, `api.json5` or `api.toml`) with the following format:
@@ -92,13 +92,8 @@ Create a configuration file (such as `api.json`, `api.yaml`, `api.json5` or `api
       "token2-for-auth"
     ],
     "model": [
-      "claude-sonnet-4-20250514",
-      "claude-3-5-haiku-20241022",
-      "claude-3-opus-20240229"
-    ],
-    "fast": [
-      "claude-3-5-haiku-20241022",
-      "claude-3-haiku-20240307"
+      "claude-sonnet-4-5-20250929",
+      "claude-sonnet-4-20250514"
     ]
   }
 }
@@ -123,12 +118,8 @@ multiconfig:
     - "token1-for-auth"
     - "token2-for-auth"
   model:
+    - "claude-sonnet-4-5-20250929"
     - "claude-sonnet-4-20250514"
-    - "claude-3-5-haiku-20241022"
-    - "claude-3-opus-20240229"
-  fast:
-    - "claude-3-5-haiku-20241022"
-    - "claude-3-haiku-20240307"
 ```
 
 **Field Description:**
@@ -150,7 +141,7 @@ multiconfig:
 - `fast`: Fast model name (optional, default: claude-3-5-haiku-20241022)
   - **String format**: Directly specify a single fast model
   - **Array format**: Specify multiple fast models, supports switching via index
-- `timeout`: Request timeout in milliseconds (optional, default: official 600000ms)
+- `timeout`: Request timeout (optional, default: official 600000ms)
 - `tokens`: Maximum output tokens (optional, default: follow official settings)
 - `http`: Specify HTTP proxy server for network connections
 - `https`: Specify HTTPS proxy server for network connections
@@ -166,7 +157,7 @@ ccapi ls or ccapi list
 - Configurations marked with `*` indicate currently active configuration
 - For array format url/key/token/model/fast, index numbers are displayed
 
-### 5. Switch Configuration (Must restart Claude Code terminal after switching!!!)
+### 5. Freely Switch Configurations (Must restart Claude Code terminal after switching!!!)
 
 #### Basic Switching
 
@@ -185,11 +176,11 @@ ccapi use anyrouter
 ccapi use multiconfig -u 1 -t 1 -m 2 -f 1
 
 # Switch only specific field indices
-ccapi use multiconfig -k 1      # Switch Key index only
-ccapi use multiconfig -t 2      # Switch Token index only
-ccapi use multiconfig -u 1      # Switch URL index only
-ccapi use multiconfig -m 3      # Switch Model index only
-ccapi use multiconfig -f 2      # Switch Fast Model index only
+ccapi use multiconfig -k 1      # Switch to specific Key only
+ccapi use multiconfig -t 2      # Switch to specific Token only
+ccapi use multiconfig -u 1      # Switch to specific URL only
+ccapi use multiconfig -m 3      # Switch to specific Model only
+ccapi use multiconfig -f 2      # Switch to specific Fast Model index only
 ```
 
 #### Complete Configuration Cleanup
@@ -291,32 +282,28 @@ ccapi ping openrouter
 Test whether gateway API configurations are available in Claude Code, which can truly reflect whether configurations are effective
 
 ```bash
-# Test all configurations (default uses API mock method, fast)
+# Test all configurations
 ccapi test
 
-# Test specific configuration (default uses API mock method)
+# Test specific configuration
 ccapi test openrouter
 
 # Use Claude Code CLI method for testing (more accurate but slower)
 ccapi test -c
 ccapi test -c openrouter
-
-# Test using specific Key or Token index
-ccapi test openrouter -k 1    # Use 1st Key
-ccapi test openrouter -t 2    # Use 2nd Token
 ```
 
 **Test Method Description:**
 
-- **Default Method**: Uses API mock method, directly simulates Claude CLI request headers, fast (2-3 seconds), supports retry mechanism
-- **CLI Method** (`-c` option): Uses real Claude Code CLI environment, highest accuracy but slower (40-50 seconds)
+- **Default Method**: Uses API mock method, directly simulates Claude CLI requests, fast, accuracy can reach 100%
+- **CLI Method** (`-c` option): Uses real Claude Code CLI environment, highest accuracy, may call various mcp services, slower (about 1 minute)
 
 **Configuration Description:**
 
 - **ping test timeout**: Defaults to 5 seconds, can be controlled by adding timeout variable in ~/.ccapi-config.json file, e.g.: pingTimeout: 5000
-- **test timeout**: Defaults to 30 seconds (API mock method) or 60 seconds (CLI method), can be controlled by adding timeout variable in ~/.ccapi-config.json file, e.g.: testTimeout: 30000
-- **Test result response**: Displayed by default. Since different providers return different results, response results are for reference only. Can enable result display by adding variable in ~/.ccapi-config.json file, e.g.: testResponse: true
-- **Test concurrency in cli mode**: The default value is 3. Due to the high performance consumption of cli mode testing, batch testing is adopted. If all test results are timed out, it is recommended to set a smaller value and extend the timeout period.
+- **test test timeout**: Defaults to 30 seconds (API mock method) or 100 seconds (CLI method), can be controlled by adding timeout variable in ~/.ccapi-config.json file, e.g.: testTimeout: 30000
+- **Test result response**: Displayed by default. Since different providers return different results, response results are for reference only. Can control result display by adding variable in ~/.ccapi-config.json file, e.g.: testResponse: true
+- **test cli mode test concurrency**: Defaults to 3. Due to high performance consumption of cli mode testing, batch testing is adopted. If all test results are timed out, it is recommended to set a smaller value and extend the timeout period.
 
   ```json5
   {
@@ -328,6 +315,7 @@ ccapi test openrouter -t 2    # Use 2nd Token
     "testConcurrency": 3
   }
   ```
+
 - For array format URLs, all URL addresses will be tested, array configuration URLs will not be sorted by latency internally, maintaining original URL order
 - Configurations sorted by best latency, lowest latency configurations appear first
 - Shows optimal route (fastest URL address) for each configuration
@@ -430,7 +418,7 @@ ccapi update
 
 ### 11. Language Settings (Internationalization)
 
-The program supports bilingual interface in Chinese and English, you can switch display language as needed:
+The program supports bilingual interface in Chinese and English, you can switch display language as needed, defaults to Chinese:
 
 ```bash
 # View current language settings
@@ -444,16 +432,16 @@ ccapi lang en
 
 # You can also modify directly in configuration file ~/.ccapi-config.json
 {
-  "language": "en"
+  "language": "zh"
 }
 ```
 
-### 13. Complete ccapi-config.json Configuration
+### 12. Complete ccapi-config.json Configuration
 
 This file is the configuration file used by ccapi, where you can configure options. The specific file is located at ~/.ccapi-config.json.
 
 ```bash
-{ 
+{
   # settings.json file path
   "settingsPath": "~/.claude/settings.json",
   # api configuration file path
@@ -471,7 +459,7 @@ This file is the configuration file used by ccapi, where you can configure optio
   # whether to synchronously modify system environment variables when using use command
   "useNoEnv": true,
   # interface language setting (zh: Chinese, en: English)
-  "language": "en"
+  "language": "zh"
 }
 ```
 

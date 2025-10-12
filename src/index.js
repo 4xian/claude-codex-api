@@ -193,6 +193,7 @@ async function initializeProgram() {
     .command('use <name>')
     .description(await t('commands.codex.use.description'))
     .option('-m, --model <index>', await t('commands.codex.use.modelOption'))
+    .option('-k, --key <index>', await t('commands.codex.use.keyOption'))
     .action(async (name, options) => {
       await codexUseCommand(name, options)
       await checkVersionInBackground()

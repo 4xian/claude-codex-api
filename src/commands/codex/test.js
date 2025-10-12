@@ -7,6 +7,15 @@ const { instructions } = require('./instructions')
 
 let configData
 const maxText = 50
+const maxKeyText = 30
+
+/**
+ * 对 API Key 进行脱敏处理（与 list.js 保持一致）
+ */
+function maskApiKey(key) {
+  if (!key) return '***'
+  return key.length > maxKeyText ? key.slice(0, maxKeyText) + '...' : key
+}
 
 async function getConfigData() {
   if (!configData) {
@@ -97,8 +106,6 @@ async function testCodexProvider(name, config, model, attempt = 1) {
         'Accept-Encoding': 'gzip, deflate, br',
         'authorization': `Bearer ${config.api_key}`,
         'openai-beta': 'responses=experimental',
-        // 'conversation_id': '01996750-f9a9-72c2-a019-ef7affbcb73f',
-        // 'session_id': '01996750-f9a9-72c2-a019-ef7affbcb73f',
         'originator': 'codex_cli_rs'
       },
       timeout
@@ -129,47 +136,54 @@ async function testCodexProvider(name, config, model, attempt = 1) {
 
 async function testSingleProvider(name, config) {
   if (!config.base_url) {
-    return {
+    return [{
       name,
       url: null,
       success: false,
       latency: 'error',
       error: await t('codex.NO_URL'),
       model: null,
-      response: null
-    }
+      response: null,
+      keyIndex: null
+    }]
   }
 
   if (!config.api_key) {
-    return {
+    return [{
       name,
       url: config.base_url,
       success: false,
       latency: 'error',
       error: await t('codex.API_KEY_MISSING'),
       model: null,
-      response: null
-    }
+      response: null,
+      keyIndex: null
+    }]
   }
 
   const currentModel = config.models && config.models.length > 0 ? config.models[0] : 'gpt-5'
+  const apiKeys = Array.isArray(config.api_key) ? config.api_key : [config.api_key]
+  
+  const keyResults = []
+  
+  for (let i = 0; i < apiKeys.length; i++) {
+    const testConfig = { ...config, api_key: apiKeys[i] }
+    let result = await testCodexProvider(name, testConfig, currentModel, 1)
 
-  let result = await testCodexProvider(name, config, currentModel, 1)
-
-  if (result.success) {
-    return {
+    if (!result.success) {
+      result = await testCodexProvider(name, testConfig, currentModel, 2)
+    }
+    
+    keyResults.push({
       name,
       url: config.base_url,
+      keyIndex: apiKeys.length > 1 ? i + 1 : null,
+      apiKey: apiKeys[i],
       ...result
-    }
+    })
   }
-
-  result = await testCodexProvider(name, config, currentModel, 2)
-  return {
-    name,
-    url: config.base_url,
-    ...result
-  }
+  
+  return keyResults
 }
 
 async function displayTestResults(sortedResults) {
@@ -185,27 +199,40 @@ async function displayTestResults(sortedResults) {
   const cfg = await getConfigData()
   const noUrlText = await t('codex.NO_URL')
 
+  const groupedResults = {}
   sortedResults.forEach((result) => {
-    const status =
-      result.success && result.latency !== 'error'
-        ? `✅ ${chalk.green.bold(translations.valid)}`
-        : `❌ ${chalk.red.bold(translations.invalid)}`
-    const { color } = getLatencyColor(result.latency)
-    const latencyText = result.latency === 'error' ? 'error' : `${result.latency}ms`
-    const responseText = result.response
-      ? result.response.length > maxText
-        ? result.response.slice(0, maxText) + '...'
-        : result.response
-      : result.error || 'Success'
-
-    const show = cfg?.testResponse === void 0 ? true : !!cfg.testResponse
-    const responseDisplay = show ? ` [Response: ${responseText}]` : ''
-
-    const urlFormatted = result.url ? formatUrl(result.url) : noUrlText
-    console.log(chalk.cyan.bold(`[${result.name}]`))
-    console.log(`    1.[${urlFormatted}] ${status}(${color.bold(latencyText)})${responseDisplay}`)
-    console.log()
+    if (!groupedResults[result.name]) {
+      groupedResults[result.name] = []
+    }
+    groupedResults[result.name].push(result)
   })
+
+  for (const [providerName, results] of Object.entries(groupedResults)) {
+    console.log(chalk.cyan.bold(`[${providerName}]`))
+
+    results.forEach((result, index) => {
+      const status =
+        result.success && result.latency !== 'error'
+          ? `✅ ${chalk.green.bold(translations.valid)}`
+          : `❌ ${chalk.red.bold(translations.invalid)}`
+      const { color } = getLatencyColor(result.latency)
+      const latencyText = result.latency === 'error' ? 'error' : `${result.latency}ms`
+      const responseText = result.response
+        ? result.response.length > maxText
+          ? result.response.slice(0, maxText) + '...'
+          : result.response
+        : result.error || 'Success'
+
+      const show = cfg?.testResponse === void 0 ? true : !!cfg.testResponse
+      const responseDisplay = show ? ` [Response: ${responseText}]` : ''
+
+      const maskedKey = maskApiKey(result.apiKey)
+      
+      console.log(`    ${index + 1}.[${maskedKey}] ${status}(${color.bold(latencyText)})${responseDisplay}`)
+    })
+    
+    console.log()
+  }
 }
 
 async function codexTestCommand(providerName = null) {
@@ -239,7 +266,7 @@ async function codexTestCommand(providerName = null) {
       return await testSingleProvider(name, config)
     })
 
-    const allResults = await Promise.all(testPromises)
+    const allResults = (await Promise.all(testPromises)).flat()
 
     clearInterval(globalSpinner)
     process.stdout.write('\r\u001b[K')
@@ -255,16 +282,11 @@ async function codexTestCommand(providerName = null) {
 
     await displayTestResults(sortedResults)
 
-    console.log()
-
     const successResults = sortedResults.filter((r) => r.success)
     const totalUrls = sortedResults.length
     const successUrls = successResults.length
 
     console.log(chalk.green.bold(await t('codex.VALIDITY_TEST_COMPLETE', successUrls, totalUrls)))
-
-    console.log()
-
     return sortedResults
   } catch (error) {
     console.error(chalk.red(await t('codex.TEST_FAILED')), error.message)

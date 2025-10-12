@@ -14,7 +14,7 @@ function analyzeBestProvider(sortedResults, isTestMode = false) {
   const allValidResults = []
 
   for (const result of sortedResults) {
-    const { name, url, latency, success } = result
+    const { name, url, latency, success, keyIndex } = result
 
     let isValidResult = false
 
@@ -39,7 +39,8 @@ function analyzeBestProvider(sortedResults, isTestMode = false) {
       allValidResults.push({
         providerName: name,
         latency: latency,
-        url: url
+        url: url,
+        keyIndex: keyIndex
       })
     }
   }
@@ -69,6 +70,11 @@ async function buildUseOptions(providerName, bestResult, providers) {
   // 处理 model 索引（如果 models 是数组，默认选择第一个）
   if (Array.isArray(provider.models) && provider.models.length > 0) {
     options.model = '1'
+  }
+
+  // 处理 key 索引（如果有多个 key 并且指定了 keyIndex）
+  if (bestResult.keyIndex) {
+    options.key = String(bestResult.keyIndex)
   }
 
   return options
