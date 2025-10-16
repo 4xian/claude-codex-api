@@ -78,6 +78,26 @@ async function removeWindowsEnvVar(key) {
 }
 
 /**
+ * 清理所有 CCAPI 管理的环境变量（仅 Windows）
+ * 用于避免认证冲突（如 ANTHROPIC_API_KEY 和 ANTHROPIC_AUTH_TOKEN 同时存在）
+ */
+async function clearAllClaudeEnvVars() {
+  try {
+    const allKeys = Object.values(CLAUDE_ENV_KEYS)
+    allKeys.push(CONFIG_IDENTIFIER)
+
+    // 并行删除所有环境变量
+    const promises = allKeys.map(key => removeWindowsEnvVar(key))
+    await Promise.all(promises)
+
+    return true
+  } catch (error) {
+    // 静默失败，继续设置新的环境变量
+    return false
+  }
+}
+
+/**
  * 设置Unix系统环境变量（Mac/Linux）- 批量设置
  */
 async function setUnixEnvVars(envVars) {
@@ -234,8 +254,11 @@ async function setSystemEnvVars(config, configName, tip = true) {
     // 根据平台设置环境变量
     let success = false
     if (platform === 'windows') {
+      // Windows: 先清理所有旧的环境变量，避免认证冲突（如 API_KEY 和 AUTH_TOKEN 共存）
+      await clearAllClaudeEnvVars()
       success = await setWindowsEnvVars(envVarsToSet)
     } else {
+      // Unix/Mac: setUnixEnvVars 内部会自动删除旧的 CCAPI 区域，不需要额外清理
       success = await setUnixEnvVars(envVarsToSet)
     }
 
