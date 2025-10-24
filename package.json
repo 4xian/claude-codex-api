@@ -1,6 +1,6 @@
 {
   "name": "@4xian/ccapi",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "author": "4xian (https://github.com/4xian)",
   "description": "A tool for quickly switching Claude Code and Codex configurations, one-click switching of URL, API_KEY, AUTH_TOKEN, MODEL, one-click switching of system environment variables, URL delay speed measurement, API validity test, and internationalization support",
   "repository": {
@@ -54,8 +54,7 @@
     "node": ">=18.0.0"
   },
   "updateLogs": [
-    "1. 调整claude code默认模型为4.5",
-    "2. 新增codex配置切换，使用方式请查看github文档"
+    "1. 修复win下 ccapi update 失败的问题"
   ],
   "files": [
     "dist",
