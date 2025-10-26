@@ -233,7 +233,7 @@ async function testApiLatencyWithCurl(url, key, token, model = 'claude-3-5-haiku
         tools: [],
         metadata: {
           user_id:
-            'user_035f3800f7f80f30fc50b1d72140745cacdd6aae25242833a7ec520b1936a4bc_account__session_18097d37-792a-46e3-b097-4532d7721202'
+            'user__account__session_111'
         }
       }
 
