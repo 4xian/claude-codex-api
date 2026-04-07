@@ -80,11 +80,13 @@ async function validateConfig() {
   }
 
   if (!(await fileExists(config.settingsPath))) {
-    throw new Error(await t(ERROR_MESSAGES.SETTINGS_NOT_FOUND))
+    throw new Error('settings file does not exist, please check path setting')
   }
 
   if (!(await fileExists(config.apiConfigPath))) {
-    throw new Error(await t(ERROR_MESSAGES.API_CONFIG_NOT_FOUND))
+    throw new Error(
+      'api configuration file does not exist, please check path setting (supports JSON, JSON5, YAML, TOML formats)'
+    )
   }
 
   return config

@@ -35,7 +35,13 @@ async function readConfigFile(filePath) {
       throw new Error('File does not exist: ' + filePath)
     }
 
-    const content = await fs.readFile(filePath, 'utf8')
+    let content = await fs.readFile(filePath, 'utf8')
+
+    // 移除 UTF-8 BOM
+    if (content.charCodeAt(0) === 0xfeff) {
+      content = content.slice(1)
+    }
+
     const format = getConfigFormat(filePath)
 
     if (!format) {
@@ -63,13 +69,13 @@ async function readConfigFile(filePath) {
     return parsed
   } catch (error) {
     if (error.name === 'JSONError' || error.message.includes('JSON')) {
-      throw new Error(`${await t(ERROR_MESSAGES.INVALID_JSON)}: ${filePath} - ${error.message}`)
+      throw new Error(`${'JSON file format error'}: ${filePath} - ${error.message}`)
     }
     if (error.name === 'YAMLException') {
-      throw new Error(`${await t(ERROR_MESSAGES.INVALID_YAML)}: ${filePath} - ${error.message}`)
+      throw new Error(`${'YAML file format error'}: ${filePath} - ${error.message}`)
     }
     if (error.name === 'TomlError' || error.message.includes('TOML')) {
-      throw new Error(`${await t(ERROR_MESSAGES.INVALID_TOML)}: ${filePath} - ${error.message}`)
+      throw new Error(`${'TOML file format error'}: ${filePath} - ${error.message}`)
     }
     throw error
   }

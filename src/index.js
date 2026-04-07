@@ -230,17 +230,17 @@ async function initializeProgram() {
 
 // 全局错误处理
 process.on('uncaughtException', async (error) => {
-  console.error(chalk.red(await t('errors.PROGRAM_ERROR') + ':'), error.message)
+  console.error(chalk.red((await t('errors.PROGRAM_ERROR')) + ':'), error.message)
   if (process.env.NODE_ENV === 'development') {
-    console.error(error.stack)
+    console.error(chalk.red('uncaughtException:'), error.stack)
   }
   process.exit(1)
 })
 
 process.on('unhandledRejection', async (reason, promise) => {
-  console.error(chalk.red(await t('errors.UNHANDLED_PROMISE') + ':'), reason)
+  console.error(chalk.red((await t('errors.UNHANDLED_PROMISE')) + ':'), reason)
   if (process.env.NODE_ENV === 'development') {
-    console.error('Promise:', promise)
+    console.error(chalk.red('unhandledRejection:'), promise)
   }
   process.exit(1)
 })
@@ -249,10 +249,10 @@ process.on('unhandledRejection', async (reason, promise) => {
 async function main() {
   try {
     const program = await initializeProgram()
-    
+
     // 解析命令行参数
     program.parse(process.argv)
-    
+
     // 如果没有提供任何参数，显示帮助信息
     if (!process.argv.slice(2).length) {
       program.outputHelp()
