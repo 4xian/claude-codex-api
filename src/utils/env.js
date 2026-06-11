@@ -14,6 +14,13 @@ const maxText = 30
 const CONFIG_IDENTIFIER = 'CCAPI_CURRENT_CONFIG'
 
 /**
+ * 安全地将值包裹为 POSIX shell 单引号字符串
+ */
+function shellQuote(value) {
+  return `'${String(value).replace(/'/g, `'\"'\"'`)}'`
+}
+
+/**
  * 获取当前平台类型
  */
 async function getPlatformType() {
@@ -103,7 +110,7 @@ async function setUnixEnvVars(envVars) {
     }
 
     // 构建新的环境变量区域
-    const envLines = ['', startMarker, ...Object.entries(envVars).map(([k, v]) => `export ${k}="${v}"`), endMarker, '']
+    const envLines = ['', startMarker, ...Object.entries(envVars).map(([k, v]) => `export ${k}=${shellQuote(v)}`), endMarker, '']
 
     // 写入配置文件
     const newContent = content.trim() + '\n' + envLines.join('\n')
