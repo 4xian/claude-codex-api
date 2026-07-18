@@ -467,3 +467,5 @@ ccapi lang en
 
 - Node.js >= 18.0.0
 - 支持的操作系统: macOS, Linux, Windows
+
+- [JiuRelay](https://jiurelay.com/) - Free AI API relay for GPT, Claude, GLM. No registration required, 1-hour valid key, OpenAI/Anthropic compatible.
